@@ -1,0 +1,45 @@
+#version 300 es
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform float u_time;
+
+in vec2 v_texcoord;
+out vec4 color;
+
+float left(float x) { return sqrt((-x+0.5)/2.0); }
+float mid(float x) { return sqrt((x-0.5)/0.2); }
+float right(float x) { return sqrt((x-0.5)/5.0); }
+
+float t() {
+    float delta = u_time - 4.0 * floor(u_time/4.0);
+    if(delta <= 1.0) return delta;
+    else if(delta <= 2.0) return 2.0 - delta;
+    else if(delta <= 3.0) return -(3.0 - delta);
+    else return -1.0+(4.0-delta);
+}
+
+float f(float x) { 
+    return 0.2*(
+        sqrt((x-0.5)/4.0) +
+        sin((8.0-2.0)*(x-0.5))
+    ) / (2.0 - sin(t()));; 
+}
+
+float g(float x) {
+    if(x < 0.55) return 0.0;
+    return (
+        sqrt(0.5*(x-0.55)/8.0) +
+        sin((x-0.55)/(5.0+2.0))
+    ) / (2.5 - sin(t()));
+}
+
+void main() {
+    if(v_texcoord.y <= f(v_texcoord.x) &&
+        v_texcoord.y >= g(v_texcoord.x)) {
+        color = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+    else color = vec4(0.0, 0.0, 0.0, 1.0);
+    //color = vec4(1.0, 0.0, 0.0, 1.0);
+}
